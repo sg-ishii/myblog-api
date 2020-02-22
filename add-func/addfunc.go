@@ -58,9 +58,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	defer client.Close()
 
 	// Firestoreにデータを登録
-	_, _, err = client.Collection("reads").Doc(uuid).Collection("slags").Add(ctx, map[string]interface{}{
-		"slags": slag,
-	})
+	doc := make(map[string]interface{})
+	doc[slag] = true
+	_, err = client.Collection("reads").Doc(uuid).Set(ctx, doc, firestore.MergeAll)
 	if err != nil {
 		log.Fatalln(err)
 		w.WriteHeader(http.StatusInternalServerError) // 500
